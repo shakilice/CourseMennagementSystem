@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"frist/model"
 	"net/http"
+  "frist/Auth"
 )
 type Person struct{
   Username string `json:"username"`
@@ -20,6 +21,7 @@ func login(w http.ResponseWriter,r *http.Request){
    }
    var username string
    var email string
+   var role string 
    fmt.Println(P)
    r1:=model.Db.Raw("select username from users where username=?&& passwort=?",P.Username,P.Passwort).Scan(&username)
    r2:=model.Db.Raw("select email from users where email=? && passwort=?",P.Username,P.Passwort).Scan(&email)
@@ -31,6 +33,13 @@ func login(w http.ResponseWriter,r *http.Request){
 	 }
 	 w.WriteHeader(200)
 	 en.Encode(lg)
+     if r1.RowsAffected==1 {
+        model.Db.Raw("select role from users where username=?&& passwort=?",P.Username,P.Passwort).Scan(&role)
+        Auth.Setcridential(username ,role,w)
+         return;
+     }
+      model.Db.Raw("select role from users where email=?&& passwort=?",P.Username,P.Passwort).Scan(&role)
+        Auth.Setcridential(username ,role,w)
       return;
    }
   http.Error(w,"Invalid User name or Password",http.StatusBadRequest)

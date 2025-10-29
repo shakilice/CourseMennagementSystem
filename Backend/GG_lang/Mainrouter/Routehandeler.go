@@ -76,6 +76,8 @@ func global(next *http.ServeMux)http.Handler {
 func Router(){
 	Mux=http.NewServeMux()
 	Userlogin()
+	BrowseCourse()
+	Getprofile()
 	Mux.Handle("POST /signup",CheckNessary(http.HandlerFunc(setuser)))
     fmt.Println("the port is running is 8081")
     err:=http.ListenAndServe(":8081",global(Mux))
